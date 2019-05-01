@@ -13,10 +13,21 @@ func MakeOkResponse(c *gin.Context, data interface{})  {
 	})
 }
 
-func MakeErrResponse(c *gin.Context, data interface{}, err string)  {
+func MakeErrResponse(c *gin.Context, err string)  {
 	c.JSON(http.StatusOK, models.Result{
 		Status:"error",
-		Data:data,
 		ErrMsg:err,
 	})
+}
+
+func ValidErr(c *gin.Context, err error){
+	if err!=nil {
+		MakeErrResponse(c, err.Error())
+	}
+}
+
+func ValidErrWithMsg(c *gin.Context, err error, msg string){
+	if err!=nil {
+		MakeErrResponse(c, msg)
+	}
 }
