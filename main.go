@@ -25,5 +25,15 @@ func main() {
 		userRouter.POST("/all", views.QueryAllUser)
 	}
 
+	blogRouter := router.Group("/blog")
+	{
+		blogRouter.POST("/list", views.GetBlogList)
+		blogRouter.GET("/query", views.QueryBlogById)
+		blogRouter.GET("/type", views.QueryAllBlogType)
+		blogRouter.POST("/add", views.AddBlog)
+		blogRouter.PUT("/update", views.UpdateBlog)
+		blogRouter.DELETE("/delete", views.DeleteBlogById)
+	}
+
 	router.Run(":8081")
 }

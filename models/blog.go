@@ -14,18 +14,18 @@ var (
 )
 
 type Blog struct {
-	ID          int            `gorm:"column:id;primary_key" json:"id"`
-	BlogTitle   sql.NullString `gorm:"column:blog_title" json:"blog_title"`
-	BlogContent sql.NullString `gorm:"column:blog_content" json:"blog_content"`
-	Keywords    sql.NullString `gorm:"column:keywords" json:"keywords"`
-	Author      sql.NullString `gorm:"column:author" json:"author"`
-	TypeID      sql.NullInt64  `gorm:"column:type_id" json:"type_id"`
-	Personal    sql.NullInt64  `gorm:"column:personal" json:"personal"`
-	ThumbUp     sql.NullInt64  `gorm:"column:thumb_up" json:"thumb_up"`
-	ThumbDown   sql.NullInt64  `gorm:"column:thumb_down" json:"thumb_down"`
-	Status      int            `gorm:"column:status" json:"status"`
-	CreatedAt   time.Time      `gorm:"column:created_at" json:"created_at"`
-	UpdatedAt   time.Time      `gorm:"column:updated_at" json:"updated_at"`
+	ID          int       `gorm:"column:id;primary_key" json:"id"`
+	BlogTitle   string    `gorm:"column:blog_title" json:"blog_title"`
+	BlogContent string    `gorm:"column:blog_content" json:"blog_content"`
+	Keywords    string    `gorm:"column:keywords" json:"keywords"`
+	Author      string    `gorm:"column:author" json:"author"`
+	TypeID      int       `gorm:"column:type_id" json:"type_id"`
+	Personal    int       `gorm:"column:personal" json:"personal"`
+	ThumbUp     int       `gorm:"column:thumb_up" json:"thumb_up"`
+	ThumbDown   int       `gorm:"column:thumb_down" json:"thumb_down"`
+	Status      int       `gorm:"column:status" json:"status"`
+	CreatedAt   time.Time `gorm:"column:created_at" json:"created_at"`
+	UpdatedAt   time.Time `gorm:"column:updated_at" json:"updated_at"`
 }
 
 // TableName sets the insert table name for this struct type

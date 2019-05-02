@@ -8,6 +8,15 @@ type PageResult struct {
 type PageRequest struct {
 	CurrentPage int    `json:"current_page"`
 	PageSize    int    `json:"page_size"`
-	RoleId      int    `json:"role_id"`
 	SearchWords string `json:"search_words"`
+}
+
+type UserPageRequest struct {
+	PageRequest
+	RoleId int `json:"role_id"`
+}
+
+type BlogPageRequest struct {
+	PageRequest
+	BlogTypeId int `json:"blog_type_id"`
 }

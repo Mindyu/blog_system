@@ -56,7 +56,7 @@ func QueryUserById(c *gin.Context) {
 }
 
 func QueryAllUser(c *gin.Context) {
-	param := &common.PageRequest{}
+	param := &common.UserPageRequest{}
 	err := c.ShouldBindJSON(param)
 	if err != nil {
 		utils.MakeErrResponse(c, "参数解析失败")

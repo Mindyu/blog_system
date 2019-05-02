@@ -46,7 +46,7 @@ func SaveUser(c *gin.Context, user *models.User) error {
 	return nil
 }
 
-func Delete(c *gin.Context, user *models.User) error{
+func DeleteUser(c *gin.Context, user *models.User) error{
 	DB, err := utils.InitDB()
 	defer DB.Close()
 	if err != nil {
