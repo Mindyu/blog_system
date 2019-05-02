@@ -2,7 +2,7 @@ package jwt
 
 import (
 	"errors"
-	"github.com/Mindyu/blog_system/models"
+	"github.com/Mindyu/blog_system/models/common"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -131,7 +131,7 @@ func (j *JWT) RefreshToken(tokenString string) (string, error) {
 }
 
 func MakeErrResponse(c *gin.Context, data interface{}, err string)  {
-	c.JSON(http.StatusOK, models.Result{
+	c.JSON(http.StatusOK, common.Result{
 		Status:"error",
 		Data:data,
 		ErrMsg:err,

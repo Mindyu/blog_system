@@ -1,4 +1,4 @@
-package models
+package common
 
 type Result struct {
 	Status string `json:"status"`

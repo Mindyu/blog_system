@@ -17,8 +17,12 @@ func main() {
 		userRouter.POST("/login", views.Login)
 		userRouter.POST("/add", views.AddUser)
 		userRouter.PUT("/edit", views.UpdateUser)
-		userRouter.GET("/query", views.GetUser)
-		userRouter.DELETE("/delete", views.DeleteUser)
+		userRouter.GET("/query", views.QueryUserById)
+		userRouter.DELETE("/delete", views.DeleteUserById)
+		userRouter.GET("/valid/:name", views.ValidUserName)
+		userRouter.GET("/auth", views.QueryUserAuth)
+		userRouter.GET("/type", views.QueryUserType)
+		userRouter.POST("/all", views.QueryAllUser)
 	}
 
 	router.Run(":8081")
