@@ -20,7 +20,6 @@ func GetUserByID(c *gin.Context, userId int) (*models.User, error) {
 	return user, nil
 }
 
-
 func GetUserByName(c *gin.Context, userName string) (*models.User, error) {
 	user := &models.User{}
 	DB, err := utils.InitDB()
@@ -32,6 +31,19 @@ func GetUserByName(c *gin.Context, userName string) (*models.User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+func GetUsersByNames(c *gin.Context, userNames []string) ([]*models.User, error) {
+	users := []*models.User{}
+	DB, err := utils.InitDB()
+	defer DB.Close()
+	if err != nil {
+		return nil, err
+	}
+	if err := DB.Debug().Where("username in (?) and status = ?", userNames, 0).Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 
 func SaveUser(c *gin.Context, user *models.User) error {

@@ -89,7 +89,7 @@ func UpdateBlog(c *gin.Context) {
 }
 
 func DeleteBlogById(c *gin.Context) {
-	id := c.Query("blogID")
+	id := c.Query("blogId")
 
 	blogId, err := strconv.Atoi(id)
 	if err != nil {

@@ -11,6 +11,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func Login(c *gin.Context) {
@@ -132,6 +133,7 @@ func AddUser(c *gin.Context) {
 		return
 	}
 
+	user.CreatedAt = time.Now()
 	user.Password = md5.EncryptPassword(user.Password)
 	err = stores.SaveUser(c, user)
 	if err != nil {
@@ -180,7 +182,7 @@ func UpdateUser(c *gin.Context) {
 }
 
 func DeleteUserById(c *gin.Context) {
-	id := c.Query("userID")
+	id := c.Query("userId")
 
 	userId, err := strconv.Atoi(id)
 	if err != nil {

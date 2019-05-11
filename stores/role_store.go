@@ -32,3 +32,16 @@ func GetAllRoles(c *gin.Context) ([]*models.Role, error) {
 	}
 	return roles, nil
 }
+
+
+func SaveRole(c *gin.Context, role *models.Role) error {
+	DB, err := utils.InitDB()
+	defer DB.Close()
+	if err != nil {
+		return err
+	}
+	if err := DB.Save(role).Error; err != nil {
+		return err
+	}
+	return nil
+}

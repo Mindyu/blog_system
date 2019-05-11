@@ -30,9 +30,21 @@
 
 ### Todo
 
-- 文件上传
+- [ ] 博客首页美化、添加标签、添加热门
 
-- Ngnix 反向代理和负载均衡
+- [ ] 评论回复管理
+
+- [ ] 文件上传、下载
+
+- [ ] 系统日志
+
+- [ ] 私信管理
+
+- [ ] 权限控制
+
+- [ ] 后台首页统计功能
+
+- [ ] Ngnix 反向代理和负载均衡
 
   
 
@@ -126,6 +138,23 @@ http://localhost:8081/user/add
     "education": {
         "String": "本科",
         "Valid": true
+    }
+}
+```
+
+
+
+
+
+### 遇到过的问题
+
+1. gin 框架 axios 的 delete 请求传参问题（参考源码，delete请求接受两个参数，需要对参数的格式设定）
+
+```javascript
+var params = {
+	'data':{
+		'user_name': localStorage.getItem('ms_username'),
+		'friend_name': this.friendName
     }
 }
 ```

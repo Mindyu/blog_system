@@ -34,6 +34,20 @@ func main() {
 		blogRouter.PUT("/update", views.UpdateBlog)
 		blogRouter.DELETE("/delete", views.DeleteBlogById)
 	}
+	commentRouter := router.Group("/comment")
+	{
+		commentRouter.POST("/list", views.GetCommentList)              // 获取搜索满足条件的评论
+		commentRouter.POST("/blogId", views.GetCommentListByBolgId)    // 根据博客ID查询所有满足条件的评论
+		commentRouter.DELETE("/delete", views.DeleteCommentById)       // 根据评论ID删除评论
+		commentRouter.DELETE("/batchDelete", views.BatchDeleteComment) // 批量删除评论
+		commentRouter.POST("/add", views.InsertComment)                // 批量删除评论
+		commentRouter.POST("/reply", views.ReplyComment)               // 批量删除评论
+	}
+	friendRouter := router.Group("/friend")
+	{
+		friendRouter.POST("/list", views.GetFriendList)
+		friendRouter.DELETE("/delete", views.DeleteFriendByName)
+	}
 
 	router.Run(":8081")
 }
