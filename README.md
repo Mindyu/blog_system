@@ -30,17 +30,19 @@
 
 ### Todo
 
-- [ ] 博客首页美化、添加标签、添加热门
+- [ ] 博客首页美化、添加标签（分类）、添加归档、添加热门排序
 
-- [ ] 评论回复管理
+- [x] 评论回复管理
 
-- [ ] 文件上传、下载
+- [x] 文件上传、下载
 
 - [ ] 系统日志
 
 - [ ] 私信管理
 
-- [ ] 权限控制
+- [x] 权限控制
+
+- [ ] 保存草稿
 
 - [ ] 后台首页统计功能
 
@@ -156,6 +158,8 @@ var params = {
 		'user_name': localStorage.getItem('ms_username'),
 		'friend_name': this.friendName
     }
-}
+} // https://blog.csdn.net/qq383366204/article/details/80268007
 ```
+
+2. golang结构体json的时间格式化解决方案 <https://www.jianshu.com/p/03003d5cbdbc>
 

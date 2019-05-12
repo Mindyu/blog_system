@@ -162,22 +162,3 @@ func InsertComment(c *gin.Context) {
 	}
 	utils.MakeOkResponse(c, "评论成功")
 }
-
-func ReplyComment(c *gin.Context) {
-	commentReply := &models.CommentReply{}
-
-	err := c.ShouldBindJSON(commentReply)
-	if err != nil {
-		utils.MakeErrResponse(c, "回复评论信息转换失败")
-		return
-	}
-
-	commentReply.Status = 0
-	commentReply.CreatedAt = time.Now()
-
-	if err := stores.SaveCommentReply(c, commentReply); err != nil {
-		utils.MakeErrResponse(c, err.Error())
-		return
-	}
-	utils.MakeOkResponse(c, "回复成功")
-}

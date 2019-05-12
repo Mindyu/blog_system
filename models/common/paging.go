@@ -25,3 +25,8 @@ type CommentPageRequest struct {
 	PageRequest
 	BlogId int `json:"blog_id"`
 }
+
+type ReplyPageRequest struct {
+	PageRequest
+	CommentId int `json:"comment_id"`
+}

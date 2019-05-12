@@ -13,9 +13,14 @@ import (
 // JWTAuth 中间件，检查token
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if c.Request.URL.Path == "/user/login" || c.Request.URL.Path == "/file/upload"{
+			c.Next()
+			return
+		}
 		token := c.Request.Header.Get("Authorization")
 		if token == "" {
 			MakeErrResponse(c, "", "请求未携带token，无权限访问")
+			c.Redirect(301, "http://localhost:8080/login")
 			c.Abort()
 			return
 		}
@@ -28,15 +33,22 @@ func JWTAuth() gin.HandlerFunc {
 		if err != nil {
 			if err == TokenExpired {
 				MakeErrResponse(c, "", "授权已过期")
+				c.Redirect(301, "http://localhost:8080/login")
 				c.Abort()
 				return
 			}
 			MakeErrResponse(c, "", err.Error())
+			c.Redirect(301, "http://localhost:8080/login")
 			c.Abort()
 			return
 		}
+		log.Println(claims)
 		// 继续交由下一个路由处理,并将解析出的信息传递下去
 		c.Set("claims", claims)
+		// before request
+		c.Next()
+		// after request
+		return
 	}
 }
 
