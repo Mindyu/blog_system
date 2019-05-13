@@ -30,3 +30,11 @@ type ReplyPageRequest struct {
 	PageRequest
 	CommentId int `json:"comment_id"`
 }
+
+type LogPageRequest struct {
+	PageRequest
+	UserName  string `json:"user_name"`
+	CallApi   string `json:"call_api"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+}

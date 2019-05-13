@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func GetFriendList(c *gin.Context) {
+func GetAttentionList(c *gin.Context) {
 	param := &common.PageRequest{}
 	err := c.ShouldBindJSON(param)
 	if err != nil {
@@ -18,25 +18,21 @@ func GetFriendList(c *gin.Context) {
 	}
 	log.Info(param)
 
-	friends, err := stores.GetFriendList(c, param.CurrentPage, param.PageSize, param.SearchWords)
+	attentions, err := stores.GetAttentionList(c, param.CurrentPage, param.PageSize, param.SearchWords)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
-	total, err := stores.GetFriendListCount(c, param.SearchWords)
+	total, err := stores.GetAttentionListCount(c, param.SearchWords)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
-	friendNames := []string{}
-	for _, friend := range friends {
-		friendName := friend.Username1
-		if friendName == param.SearchWords {
-			friendName = friend.Username2
-		}
-		friendNames = append(friendNames, friendName)
+	attentionNames := []string{}
+	for _, attention := range attentions {
+		attentionNames = append(attentionNames, attention.FocusedUser)
 	}
-	user, err := stores.GetUsersByNames(c, friendNames)
+	user, err := stores.GetUsersByNames(c, attentionNames)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
@@ -45,49 +41,48 @@ func GetFriendList(c *gin.Context) {
 	utils.MakeOkResponse(c, common.PageResult{TotalNum: total, List: user})
 }
 
-func DeleteFriendById(c *gin.Context) {
+func DeleteAttentionById(c *gin.Context) {
 	id := c.Query("id")
 
-	friendId, err := strconv.Atoi(id)
+	attentionId, err := strconv.Atoi(id)
 	if err != nil {
 		utils.MakeErrResponse(c, "ID转换失败")
 		return
 	}
 
-	friend, err := stores.GetFriendByID(c, friendId)
+	attention, err := stores.GetAttentionByID(c, attentionId)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
 
-	friend.Status = 1
-	if err := stores.SaveFriend(c, friend); err != nil {
+	attention.Status = 1
+	if err := stores.SaveAttention(c, attention); err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
 	utils.MakeOkResponse(c, "删除成功")
 }
 
-func DeleteFriendByName(c *gin.Context) {
+func DeleteAttentionByName(c *gin.Context) {
 	req := &struct {
-		UserName   string `json:"user_name"`
-		FriendName string `json:"friend_name"`
+		UserName      string `json:"user_name"`
+		AttentionName string `json:"attention_name"`
 	}{}
 	err := c.ShouldBindJSON(req)
 	if err != nil {
-		log.Info(err.Error())
 		utils.MakeErrResponse(c, "参数解析失败")
 		return
 	}
 
-	friend, err := stores.GetFriendByName(c, req.UserName, req.FriendName)
+	attention, err := stores.GetAttentionByName(c, req.UserName, req.AttentionName)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
 
-	friend.Status = 1
-	if err := stores.SaveFriend(c, friend); err != nil {
+	attention.Status = 1
+	if err := stores.SaveAttention(c, attention); err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}

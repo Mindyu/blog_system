@@ -134,7 +134,8 @@ func AddUser(c *gin.Context) {
 	}
 
 	user.CreatedAt = time.Now()
-	user.Password = md5.EncryptPassword(user.Password)
+	user.Salt = utils.GetRandomSalt()
+	user.Password = md5.EncryptPasswordWithSalt(user.Password, user.Salt)
 	err = stores.SaveUser(c, user)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())

@@ -2,7 +2,6 @@ package jwt
 
 import (
 	"errors"
-	"github.com/Mindyu/blog_system/models/common"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -19,8 +18,7 @@ func JWTAuth() gin.HandlerFunc {
 		}
 		token := c.Request.Header.Get("Authorization")
 		if token == "" {
-			MakeErrResponse(c, "", "请求未携带token，无权限访问")
-			c.Redirect(301, "http://localhost:8080/login")
+			c.JSON(http.StatusUnauthorized, "请求未携带token，无权限访问")
 			c.Abort()
 			return
 		}
@@ -32,13 +30,11 @@ func JWTAuth() gin.HandlerFunc {
 		claims, err := j.ParseToken(token)
 		if err != nil {
 			if err == TokenExpired {
-				MakeErrResponse(c, "", "授权已过期")
-				c.Redirect(301, "http://localhost:8080/login")
+				c.JSON(http.StatusUnauthorized, "授权已过期")
 				c.Abort()
 				return
 			}
-			MakeErrResponse(c, "", err.Error())
-			c.Redirect(301, "http://localhost:8080/login")
+			c.JSON(http.StatusUnauthorized, err.Error())
 			c.Abort()
 			return
 		}
@@ -140,12 +136,4 @@ func (j *JWT) RefreshToken(tokenString string) (string, error) {
 		return j.CreateToken(*claims)
 	}
 	return "", TokenInvalid
-}
-
-func MakeErrResponse(c *gin.Context, data interface{}, err string)  {
-	c.JSON(http.StatusOK, common.Result{
-		Status:"error",
-		Data:data,
-		ErrMsg:err,
-	})
 }

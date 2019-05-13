@@ -2,6 +2,7 @@ package views
 
 import (
 	"github.com/Mindyu/blog_system/utils"
+	"github.com/Mindyu/blog_system/utils/fileutil"
 	"github.com/gin-gonic/gin"
 	"io"
 	"os"
@@ -20,7 +21,7 @@ func Upload(ctx *gin.Context) {
 	}
 
 	file, err := info.Open()
-	ext := utils.ExtensionName(info.Filename)
+	ext := fileutil.ExtensionName(info.Filename)
 	path := dir + "/"
 	err = os.MkdirAll("./public/upload/"+path, os.ModePerm)
 	if err != nil {
@@ -28,7 +29,7 @@ func Upload(ctx *gin.Context) {
 		return
 	}
 
-	path += utils.UniqueID() + strings.ToLower(ext)
+	path += fileutil.UniqueID() + strings.ToLower(ext)
 	out, err := os.OpenFile("./public/upload/"+path, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		utils.MakeErrResponse(ctx, err.Error())

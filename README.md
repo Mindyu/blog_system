@@ -42,6 +42,8 @@
 
 - [x] 权限控制
 
+- [x] 关注管理（单向）好友管理（双向）
+
 - [ ] 保存草稿
 
 - [ ] 后台首页统计功能
@@ -162,4 +164,26 @@ var params = {
 ```
 
 2. golang结构体json的时间格式化解决方案 <https://www.jianshu.com/p/03003d5cbdbc>
+
+```go
+
+// 实现它的json序列化方法
+func (this Log) MarshalJSON() ([]byte, error) {
+	// 定义一个该结构体的别名
+	type AliasCom Log
+	// 定义一个新的结构体
+	tmp := struct {
+		AliasCom
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
+	}{
+		AliasCom:  (AliasCom)(this),
+		CreatedAt: this.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt: this.UpdatedAt.Format("2006-01-02 15:04:05"),
+	}
+	return json.Marshal(tmp)
+}
+```
+
+
 
