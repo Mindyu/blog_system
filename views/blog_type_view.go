@@ -14,3 +14,12 @@ func QueryAllBlogType(c *gin.Context) {
 	}
 	utils.MakeOkResponse(c, types)
 }
+
+func QueryBlogTypeStats(c *gin.Context) {
+	types, err := stores.GetBlogTypeStats(c)
+	if err != nil {
+		utils.MakeErrResponse(c, err.Error())
+		return
+	}
+	utils.MakeOkResponse(c, types)
+}

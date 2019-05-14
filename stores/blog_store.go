@@ -3,8 +3,10 @@ package stores
 import (
 	"fmt"
 	"github.com/Mindyu/blog_system/models"
+	"github.com/Mindyu/blog_system/models/common"
 	"github.com/Mindyu/blog_system/utils"
 	"github.com/gin-gonic/gin"
+	"strings"
 )
 
 func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey string) ([]*models.Blog, error) {
@@ -21,12 +23,11 @@ func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey strin
 	if searchKey != "" {
 		sql = fmt.Sprintf("%s and (blog_title LIKE '%%%s%%') or (blog_content LIKE '%%%s%%')", sql, searchKey, searchKey)
 	}
-	if err := DB.Debug().Where(sql).Offset((page-1)*pageSize).Limit(pageSize).Order("created_at DESC").Find(&blogs).Error; err != nil {
+	if err := DB.Debug().Where(sql).Offset((page - 1) * pageSize).Limit(pageSize).Order("created_at DESC").Find(&blogs).Error; err != nil {
 		return nil, err
 	}
 	return blogs, nil
 }
-
 
 func GetBlogListCount(c *gin.Context, blogTypeId int, searchKey string) (int, error) {
 	count := 0
@@ -61,7 +62,6 @@ func GetBlogById(c *gin.Context, id int) (*models.Blog, error) {
 	return blog, nil
 }
 
-
 func SaveBlog(c *gin.Context, blog *models.Blog) error {
 	DB, err := utils.InitDB()
 	defer DB.Close()
@@ -74,7 +74,7 @@ func SaveBlog(c *gin.Context, blog *models.Blog) error {
 	return nil
 }
 
-func DeleteBlogById(c *gin.Context, user *models.User) error{
+func DeleteBlogById(c *gin.Context, user *models.User) error {
 	DB, err := utils.InitDB()
 	defer DB.Close()
 	if err != nil {
@@ -84,4 +84,57 @@ func DeleteBlogById(c *gin.Context, user *models.User) error{
 		return err
 	}
 	return nil
+}
+
+func GetBlogTypeStats(c *gin.Context) ([]*common.BlogTypeResp, error) {
+	types := []*common.BlogTypeResp{}
+	DB, err := utils.InitDB()
+	defer DB.Close()
+	if err != nil {
+		return nil, err
+	}
+	sql := `SELECT 
+	type_id, type_name, count(*) as count
+from 
+	blog 
+LEFT JOIN
+	blog_type type on type_id = type.id
+WHERE
+	blog.status = 0
+GROUP BY
+	type_id
+ORDER BY
+	count DESC`
+	sql = strings.Replace(sql, "\r\n", "\n", -1)
+	if err := DB.Debug().Raw(sql).Scan(&types).Error; err != nil {
+		return nil, err
+	}
+	return types, nil
+}
+
+type Stats struct {
+	Month string `json:"month"`
+	Count int    `json:"count"`
+}
+
+func GetBlogStatsByMonth(c *gin.Context) ([]*Stats, error) {
+	stats := []*Stats{}
+	DB, err := utils.InitDB()
+	defer DB.Close()
+	if err != nil {
+		return nil, err
+	}
+	sql := `SELECT 
+	DATE_FORMAT(created_at, '%Y-%m') as month, count(*) as count
+from 
+	blog
+GROUP BY
+	month
+ORDER BY
+	month DESC`
+	sql = strings.Replace(sql, "\r\n", "\n", -1)
+	if err := DB.Debug().Raw(sql).Scan(&stats).Error; err != nil {
+		return nil, err
+	}
+	return stats, nil
 }

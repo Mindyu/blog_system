@@ -36,6 +36,8 @@ func main() {
 		blogRouter.POST("/list", views.GetBlogList)
 		blogRouter.GET("/query", views.QueryBlogById)
 		blogRouter.GET("/type", views.QueryAllBlogType)
+		blogRouter.GET("/typecount", views.QueryBlogTypeStats)
+		blogRouter.GET("/monthcount", views.QueryBlogByMonth)
 		blogRouter.POST("/add", systemlog.OperationLog(views.AddBlog, "新增博客"))
 		blogRouter.PUT("/update", systemlog.OperationLog(views.UpdateBlog, "修改博客"))
 		blogRouter.DELETE("/delete", utils.BasicAuth(systemlog.OperationLog(views.DeleteBlogById, "删除博客")))

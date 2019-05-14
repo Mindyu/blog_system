@@ -30,13 +30,13 @@
 
 ### Todo
 
-- [ ] 博客首页美化、添加标签（分类）、添加归档、添加热门排序
+- [ ] 博客首页美化、添加标签（分类）、添加归档、添加热门、评论排序
 
 - [x] 评论回复管理
 
 - [x] 文件上传、下载
 
-- [ ] 系统日志
+- [x] 系统日志
 
 - [ ] 私信管理
 
@@ -185,5 +185,5 @@ func (this Log) MarshalJSON() ([]byte, error) {
 }
 ```
 
-
+3. 系统日志模块，处理器串联，提示解析参数失败，ShouldBindJSON 报EOF错误。原因是c.Request.Body只能读取一次https://blog.csdn.net/impressionw/article/details/84194783， 日志参数首先从body中取，然后从url中的参数中取。
 

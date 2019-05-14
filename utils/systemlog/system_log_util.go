@@ -31,7 +31,8 @@ func OperationLog(h gin.HandlerFunc, operation string) gin.HandlerFunc {
 		log.Info(systemLog)
 		stores.SaveSystemLog(ctx, systemLog)
 
-		ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer(data)) // 关键点
+		// 将body值写回
+		ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer(data))
 		h(ctx)
 	}
 }

@@ -110,3 +110,14 @@ func DeleteBlogById(c *gin.Context) {
 	}
 	utils.MakeOkResponse(c, "删除成功")
 }
+
+func QueryBlogByMonth(c *gin.Context) {
+
+	stats, err := stores.GetBlogStatsByMonth(c)
+	if err != nil {
+		utils.MakeErrResponse(c, err.Error())
+		return
+	}
+
+	utils.MakeOkResponse(c, stats)
+}
