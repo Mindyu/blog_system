@@ -22,8 +22,8 @@ type Blog struct {
 	Author      string    `gorm:"column:author" json:"author"`
 	TypeID      int       `gorm:"column:type_id" json:"type_id"`
 	Personal    int       `gorm:"column:personal" json:"personal"`
-	ThumbUp     int       `gorm:"column:thumb_up" json:"thumb_up"`
-	ThumbDown   int       `gorm:"column:thumb_down" json:"thumb_down"`
+	ReadCount   int       `gorm:"column:read_count" json:"read_count"`
+	ReplyCount  int       `gorm:"column:reply_count" json:"reply_count"`
 	Status      int       `gorm:"column:status" json:"status"`
 	CreatedAt   time.Time `gorm:"column:created_at" json:"created_at"`
 	UpdatedAt   time.Time `gorm:"column:updated_at" json:"updated_at"`
@@ -33,7 +33,6 @@ type Blog struct {
 func (b *Blog) TableName() string {
 	return "blog"
 }
-
 
 // 实现它的json序列化方法
 func (this Blog) MarshalJSON() ([]byte, error) {

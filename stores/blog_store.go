@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey string) ([]*models.Blog, error) {
+func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey string, sortType int) ([]*models.Blog, error) {
 	blogs := []*models.Blog{}
 	DB, err := utils.InitDB()
 	defer DB.Close()
@@ -21,9 +21,16 @@ func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey strin
 		sql = fmt.Sprintf("%s and type_id = %d", sql, blogTypeId)
 	}
 	if searchKey != "" {
-		sql = fmt.Sprintf("%s and (blog_title LIKE '%%%s%%') or (blog_content LIKE '%%%s%%')", sql, searchKey, searchKey)
+		if len(searchKey) == 7 && strings.Index(searchKey, "-") == 4 { // 按日期搜索
+			sql = fmt.Sprintf("%s and created_at like '%s%%'", sql, searchKey)
+		} else {
+			sql = fmt.Sprintf("%s and ((blog_title LIKE '%%%s%%') or (keywords LIKE '%%%s%%') or "+
+				"(author LIKE '%%%s%%'))", sql, searchKey, searchKey, searchKey)
+		}
 	}
-	if err := DB.Debug().Where(sql).Offset((page - 1) * pageSize).Limit(pageSize).Order("created_at DESC").Find(&blogs).Error; err != nil {
+	sortList := []string{"created_at", "read_count", "reply_count"}
+	if err := DB.Debug().Where(sql).Offset((page - 1) * pageSize).Limit(pageSize).Order(sortList[sortType] + " DESC").
+		Find(&blogs).Error; err != nil {
 		return nil, err
 	}
 	return blogs, nil
@@ -137,4 +144,24 @@ ORDER BY
 		return nil, err
 	}
 	return stats, nil
+}
+
+func GetBlogTags(c *gin.Context) ([]*common.Key, error) {
+	tags := []*common.Key{}
+	DB, err := utils.InitDB()
+	defer DB.Close()
+	if err != nil {
+		return nil, err
+	}
+	sql := `SELECT 
+	keywords
+from 
+	blog
+WHERE
+	status = 0`
+	sql = strings.Replace(sql, "\r\n", "\n", -1)
+	if err := DB.Debug().Raw(sql).Scan(&tags).Error; err != nil {
+		return nil, err
+	}
+	return tags, nil
 }

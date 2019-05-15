@@ -15,8 +15,8 @@ func main() {
 
 	router.StaticFS("/file", http.Dir("public/upload"))
 	//使用中间件
-	router.Use(middleware.Cors())   // 跨域请求解决
-	router.Use(jwt.JWTAuth())       // Jwt认证，除登陆外所有请求都需要携带tokenren认证
+	router.Use(middleware.Cors()) // 跨域请求解决
+	router.Use(jwt.JWTAuth())     // Jwt认证，除登陆外所有请求都需要携带tokenren认证
 
 	userRouter := router.Group("/user")
 	{
@@ -38,23 +38,24 @@ func main() {
 		blogRouter.GET("/type", views.QueryAllBlogType)
 		blogRouter.GET("/typecount", views.QueryBlogTypeStats)
 		blogRouter.GET("/monthcount", views.QueryBlogByMonth)
+		blogRouter.GET("/tags", views.QueryBlogTags)
 		blogRouter.POST("/add", systemlog.OperationLog(views.AddBlog, "新增博客"))
 		blogRouter.PUT("/update", systemlog.OperationLog(views.UpdateBlog, "修改博客"))
 		blogRouter.DELETE("/delete", utils.BasicAuth(systemlog.OperationLog(views.DeleteBlogById, "删除博客")))
 	}
 	commentRouter := router.Group("/comment")
 	{
-		commentRouter.POST("/list", views.GetCommentList)              // 获取搜索满足条件的评论
-		commentRouter.POST("/blogId", views.GetCommentListByBolgId)    // 根据博客ID查询所有满足条件的评论
-		commentRouter.DELETE("/delete", systemlog.OperationLog(views.DeleteCommentById, "删除评论"))       // 根据评论ID删除评论
+		commentRouter.POST("/list", views.GetCommentList)                                               // 获取搜索满足条件的评论
+		commentRouter.POST("/blogId", views.GetCommentListByBolgId)                                     // 根据博客ID查询所有满足条件的评论
+		commentRouter.DELETE("/delete", systemlog.OperationLog(views.DeleteCommentById, "删除评论"))        // 根据评论ID删除评论
 		commentRouter.DELETE("/batchDelete", systemlog.OperationLog(views.BatchDeleteComment, "批量删评论")) // 批量删除评论
-		commentRouter.POST("/add", systemlog.OperationLog(views.InsertComment, "新增评论"))                // 新建评论
+		commentRouter.POST("/add", systemlog.OperationLog(views.InsertComment, "新增评论"))                 // 新建评论
 	}
 	replyRouter := router.Group("/reply")
 	{
-		replyRouter.POST("/add", systemlog.OperationLog(views.ReplyComment, "新增回复"))                    // 回复
-		replyRouter.POST("/list", views.GetReplyList)                 // 获取搜索满足条件的回复
-		replyRouter.DELETE("/delete", systemlog.OperationLog(views.DeleteCommentReplyById, "删除回复"))       // 根据评论ID删除评论
+		replyRouter.POST("/add", systemlog.OperationLog(views.ReplyComment, "新增回复"))                        // 回复
+		replyRouter.POST("/list", views.GetReplyList)                                                       // 获取搜索满足条件的回复
+		replyRouter.DELETE("/delete", systemlog.OperationLog(views.DeleteCommentReplyById, "删除回复"))         // 根据评论ID删除评论
 		replyRouter.DELETE("/batchDelete", systemlog.OperationLog(views.BatchDeleteCommentReply, "批量删除回复")) // 批量删除评论
 	}
 	friendRouter := router.Group("/friend")

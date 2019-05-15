@@ -160,5 +160,13 @@ func InsertComment(c *gin.Context) {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
+
+	// 博客评论数+1
+	blog, err := stores.GetBlogById(c, comment.BlogID)
+	if err == nil {
+		blog.ReplyCount += 1
+		_ = stores.SaveBlog(c, blog)
+	}
+
 	utils.MakeOkResponse(c, "评论成功")
 }

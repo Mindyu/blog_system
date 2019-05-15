@@ -19,6 +19,7 @@ type UserPageRequest struct {
 type BlogPageRequest struct {
 	PageRequest
 	BlogTypeId int `json:"blog_type_id"`
+	SortType   int `json:"sort_type"`
 }
 
 type CommentPageRequest struct {

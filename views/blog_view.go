@@ -8,9 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/labstack/gommon/log"
 	"strconv"
+	"strings"
 )
 
-func GetBlogList(c *gin.Context){
+func GetBlogList(c *gin.Context) {
 	param := &common.BlogPageRequest{}
 	err := c.ShouldBindJSON(param)
 	if err != nil {
@@ -19,7 +20,7 @@ func GetBlogList(c *gin.Context){
 	}
 	log.Info(param)
 
-	blogs, err := stores.GetBlogList(c, param.CurrentPage, param.PageSize, param.BlogTypeId, param.SearchWords)
+	blogs, err := stores.GetBlogList(c, param.CurrentPage, param.PageSize, param.BlogTypeId, param.SearchWords, param.SortType)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
@@ -30,10 +31,9 @@ func GetBlogList(c *gin.Context){
 		return
 	}
 
-	utils.MakeOkResponse(c, common.PageResult{TotalNum:total, List:blogs})
+	utils.MakeOkResponse(c, common.PageResult{TotalNum: total, List: blogs})
 
 }
-
 
 func QueryBlogById(c *gin.Context) {
 	id := c.Query("blogId")
@@ -50,9 +50,12 @@ func QueryBlogById(c *gin.Context) {
 		return
 	}
 
+	// 阅读量+1
+	blog.ReadCount += 1
+	_ = stores.SaveBlog(c, blog)
+
 	utils.MakeOkResponse(c, blog)
 }
-
 
 func AddBlog(c *gin.Context) {
 	blog := &models.Blog{}
@@ -120,4 +123,32 @@ func QueryBlogByMonth(c *gin.Context) {
 	}
 
 	utils.MakeOkResponse(c, stats)
+}
+
+func QueryBlogTags(c *gin.Context) {
+
+	tags, err := stores.GetBlogTags(c)
+	if err != nil {
+		utils.MakeErrResponse(c, err.Error())
+		return
+	}
+
+	tagMap := map[string]int{}
+	for _, tag := range tags {
+		tagArr := strings.Split(tag.Keywords, ",")
+		for _, one := range tagArr {
+			val, exist := tagMap[one]
+			if !exist {
+				tagMap[one] = 1
+				continue
+			}
+			tagMap[one] = val + 1
+		}
+	}
+
+	tagList := []*common.Tag{}
+	for key, val := range tagMap{
+		tagList = append(tagList, &common.Tag{TagName:key, Count:val})
+	}
+	utils.MakeOkResponse(c, tagList)
 }
