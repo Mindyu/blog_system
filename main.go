@@ -49,7 +49,8 @@ func main() {
 		commentRouter.POST("/blogId", views.GetCommentListByBolgId)                                     // 根据博客ID查询所有满足条件的评论
 		commentRouter.DELETE("/delete", systemlog.OperationLog(views.DeleteCommentById, "删除评论"))        // 根据评论ID删除评论
 		commentRouter.DELETE("/batchDelete", systemlog.OperationLog(views.BatchDeleteComment, "批量删评论")) // 批量删除评论
-		commentRouter.POST("/add", systemlog.OperationLog(views.InsertComment, "新增评论"))                 // 新建评论
+		commentRouter.POST("/add", views.InsertComment)  // 新建评论
+		//commentRouter.POST("/add", systemlog.OperationLog(views.InsertComment, "新增评论"))                 // 新建评论
 	}
 	replyRouter := router.Group("/reply")
 	{

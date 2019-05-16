@@ -2,17 +2,36 @@ package jwt
 
 import (
 	"errors"
+	"github.com/Mindyu/blog_system/utils/set"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
+
+var permitSet *set.Set
+
+func init() {
+	permitSet = set.New()
+	permitSet.Add("/user/login")
+	permitSet.Add("/user/add")
+	permitSet.Add("/file/upload")
+	permitSet.Add("/blog/typecount")
+	permitSet.Add("/blog/monthcount")
+	permitSet.Add("/blog/tags")
+	permitSet.Add("/blog/list")
+	permitSet.Add("/blog/query")
+	permitSet.Add("/comment/blogId")
+	permitSet.Add("/comment/add")
+}
 
 // JWTAuth 中间件，检查token
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if c.Request.URL.Path == "/user/login" || c.Request.URL.Path == "/file/upload"{
+		permitSet.Has(c.Request.URL.Path)
+		if permitSet.Has(c.Request.URL.Path) || strings.Contains(c.Request.URL.Path, "/user/valid") {
 			c.Next()
 			return
 		}
