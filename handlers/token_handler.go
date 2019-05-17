@@ -13,7 +13,7 @@ func TokenHelper(c *gin.Context, user *models.User) (string, error) {
 	// 根据user的权限和角色ID查询
 	roleId := user.RoleID
 
-	role, err := stores.GetRoleByIds(c, roleId)
+	role, err := stores.GetRoleById(c, roleId)
 	if err!=nil {
 		return "", errors.New("获取角色")
 	}

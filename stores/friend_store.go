@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetFriendList(c *gin.Context, page, pageSize int, searchKey string) ([]*models.Friend, error) {
+func GetFriendList(c *gin.Context, page, pageSize int, username string) ([]*models.Friend, error) {
 	friends := []*models.Friend{}
 	DB, err := utils.InitDB()
 	defer DB.Close()
@@ -15,8 +15,8 @@ func GetFriendList(c *gin.Context, page, pageSize int, searchKey string) ([]*mod
 		return nil, err
 	}
 	sql := fmt.Sprintf("status = %d", 0)
-	if searchKey != "" {
-		sql = fmt.Sprintf("%s and (username_1 = '%s') or (username_2 = '%s')", sql, searchKey, searchKey)
+	if username != "" {
+		sql = fmt.Sprintf("%s and ((username_1 = '%s') or (username_2 = '%s'))", sql, username, username)
 	}
 	if err := DB.Debug().Where(sql).Offset((page - 1) * pageSize).Limit(pageSize).Order("updated_at DESC").Find(&friends).Error; err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func GetFriendList(c *gin.Context, page, pageSize int, searchKey string) ([]*mod
 	return friends, nil
 }
 
-func GetFriendListCount(c *gin.Context, searchKey string) (int, error) {
+func GetFriendListCount(c *gin.Context, username string) (int, error) {
 	count := 0
 	DB, err := utils.InitDB()
 	defer DB.Close()
@@ -32,8 +32,8 @@ func GetFriendListCount(c *gin.Context, searchKey string) (int, error) {
 		return 0, err
 	}
 	sql := fmt.Sprintf("status = %d", 0)
-	if searchKey != "" {
-		sql = fmt.Sprintf("%s and (username_1 = '%s') or (username_2 = '%s')", sql, searchKey, searchKey)
+	if username != "" {
+		sql = fmt.Sprintf("%s and ((username_1 = '%s') or (username_2 = '%s'))", sql, username, username)
 	}
 	if err := DB.Debug().Model(&models.Friend{}).Where(sql).Count(&count).Error; err != nil {
 		return 0, err

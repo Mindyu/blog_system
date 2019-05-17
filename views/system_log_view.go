@@ -32,6 +32,17 @@ func GetSystemLogList(c *gin.Context) {
 	utils.MakeOkResponse(c, common.PageResult{TotalNum: total, List: logs})
 }
 
+
+func GetSystemLogCount(c *gin.Context) {
+	total, err := stores.GetSystemLogCount(c)
+	if err != nil {
+		utils.MakeErrResponse(c, err.Error())
+		return
+	}
+
+	utils.MakeOkResponse(c, total)
+}
+
 func DeleteSystemLogById(c *gin.Context) {
 	id := c.Query("logId")
 

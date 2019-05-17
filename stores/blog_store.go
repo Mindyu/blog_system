@@ -28,7 +28,7 @@ func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey strin
 				"(author LIKE '%%%s%%'))", sql, searchKey, searchKey, searchKey)
 		}
 	}
-	sortList := []string{"created_at", "read_count", "reply_count"}
+	sortList := []string{"updated_at", "read_count", "reply_count"}
 	if err := DB.Debug().Where(sql).Offset((page - 1) * pageSize).Limit(pageSize).Order(sortList[sortType] + " DESC").
 		Find(&blogs).Error; err != nil {
 		return nil, err

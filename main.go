@@ -23,7 +23,7 @@ func main() {
 		userRouter.POST("/login", views.Login)
 		userRouter.POST("/add", systemlog.OperationLog(views.AddUser, "新增用户"))
 		userRouter.PUT("/edit", systemlog.OperationLog(views.UpdateUser, "修改用户信息"))
-		userRouter.GET("/query", views.QueryUserById)
+		userRouter.GET("/query", views.QueryUserByName)
 		userRouter.DELETE("/delete", utils.BasicAuth(systemlog.OperationLog(views.DeleteUserById, "删除用户")))
 		userRouter.GET("/valid/:name", views.ValidUserName)
 		userRouter.GET("/auth", views.QueryUserAuth)
@@ -49,7 +49,7 @@ func main() {
 		commentRouter.POST("/blogId", views.GetCommentListByBolgId)                                     // 根据博客ID查询所有满足条件的评论
 		commentRouter.DELETE("/delete", systemlog.OperationLog(views.DeleteCommentById, "删除评论"))        // 根据评论ID删除评论
 		commentRouter.DELETE("/batchDelete", systemlog.OperationLog(views.BatchDeleteComment, "批量删评论")) // 批量删除评论
-		commentRouter.POST("/add", views.InsertComment)  // 新建评论
+		commentRouter.POST("/add", views.InsertComment)                                                 // 新建评论
 		//commentRouter.POST("/add", systemlog.OperationLog(views.InsertComment, "新增评论"))                 // 新建评论
 	}
 	replyRouter := router.Group("/reply")
@@ -61,21 +61,32 @@ func main() {
 	}
 	friendRouter := router.Group("/friend")
 	{
+		friendRouter.POST("/add", systemlog.OperationLog(views.AddFriend, "新增好友"))
 		friendRouter.POST("/list", views.GetFriendList)
 		friendRouter.DELETE("/delete", systemlog.OperationLog(views.DeleteFriendByName, "删除好友关系"))
 	}
 	attentionRouter := router.Group("/attention")
 	{
+		attentionRouter.POST("/add", systemlog.OperationLog(views.AddAttention, "新增关注关系"))
 		attentionRouter.POST("/list", views.GetAttentionList)
 		attentionRouter.DELETE("/delete", systemlog.OperationLog(views.DeleteAttentionByName, "删除关注关系"))
 	}
 	systemLogRouter := router.Group("/system")
 	{
 		systemLogRouter.POST("/list", views.GetSystemLogList)
+		systemLogRouter.GET("/count", views.GetSystemLogCount)
+		systemLogRouter.GET("/access", views.QuerySystemAccessCount)
 		systemLogRouter.DELETE("/delete", systemlog.OperationLog(views.DeleteSystemLogById, "删除日志记录"))
+	}
+	privateMsgRouter := router.Group("/msg")
+	{
+		privateMsgRouter.GET("/unread", views.QueryNotReadMsgByName)
+		privateMsgRouter.GET("/read", views.QueryReadMsgByName)
+		privateMsgRouter.PUT("/read", systemlog.OperationLog(views.ReadPrivateMsg, "已阅私信"))
+		privateMsgRouter.POST("/add", systemlog.OperationLog(views.AddPrivateMsg, "发送私信"))
 	}
 
 	router.POST("/file/upload", systemlog.OperationLog(views.Upload, "上传文件"))
 
-	router.Run(":8081")
+	_ = router.Run(":8081")
 }

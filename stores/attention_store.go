@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetAttentionList(c *gin.Context, page, pageSize int, searchKey string) ([]*models.Attention, error) {
+func GetAttentionList(c *gin.Context, page, pageSize int, username string) ([]*models.Attention, error) {
 	attentions := []*models.Attention{}
 	DB, err := utils.InitDB()
 	defer DB.Close()
@@ -15,8 +15,8 @@ func GetAttentionList(c *gin.Context, page, pageSize int, searchKey string) ([]*
 		return nil, err
 	}
 	sql := fmt.Sprintf("status = %d", 0)
-	if searchKey != "" {
-		sql = fmt.Sprintf("%s and focus_user = '%s'", sql, searchKey)
+	if username != "" {
+		sql = fmt.Sprintf("%s and focus_user = '%s'", sql, username)
 	}
 	if err := DB.Debug().Where(sql).Offset((page - 1) * pageSize).Limit(pageSize).Order("updated_at DESC").Find(&attentions).Error; err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func GetAttentionList(c *gin.Context, page, pageSize int, searchKey string) ([]*
 	return attentions, nil
 }
 
-func GetAttentionListCount(c *gin.Context, searchKey string) (int, error) {
+func GetAttentionListCount(c *gin.Context, username string) (int, error) {
 	count := 0
 	DB, err := utils.InitDB()
 	defer DB.Close()
@@ -32,8 +32,8 @@ func GetAttentionListCount(c *gin.Context, searchKey string) (int, error) {
 		return 0, err
 	}
 	sql := fmt.Sprintf("status = %d", 0)
-	if searchKey != "" {
-		sql = fmt.Sprintf("%s and focus_user = '%s'", sql, searchKey)
+	if username != "" {
+		sql = fmt.Sprintf("%s and focus_user = '%s'", sql, username)
 	}
 	if err := DB.Debug().Model(&models.Attention{}).Where(sql).Count(&count).Error; err != nil {
 		return 0, err

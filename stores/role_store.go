@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetRoleByIds(c *gin.Context, roleId int) (*models.Role, error) {
+func GetRoleById(c *gin.Context, roleId int) (*models.Role, error) {
 	role := &models.Role{}
 	DB, err := utils.InitDB()
 	defer DB.Close()

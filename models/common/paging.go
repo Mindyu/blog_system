@@ -39,3 +39,8 @@ type LogPageRequest struct {
 	StartTime string `json:"start_time"`
 	EndTime   string `json:"end_time"`
 }
+
+type RelationPageRequest struct {
+	PageRequest
+	Username string `json:"username"`
+}

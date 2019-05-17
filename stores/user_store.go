@@ -46,6 +46,27 @@ func GetUsersByNames(c *gin.Context, userNames []string) ([]*models.User, error)
 	return users, nil
 }
 
+func GetUsersByNamesAndLikeWord(c *gin.Context, userNames []string, keyword string) ([]*models.User, error) {
+	users := []*models.User{}
+	DB, err := utils.InitDB()
+	defer DB.Close()
+	if err != nil {
+		return nil, err
+	}
+	if keyword != "" {
+		likeStr := fmt.Sprintf("%%%s%%", keyword)
+		err = DB.Debug().Where("username in (?) and status = ? and (username like ? or nickname like ?)",
+			userNames, 0, likeStr, likeStr).Find(&users).Error
+	} else {
+		err = DB.Debug().Where("username in (?) and status = ?",
+			userNames, 0).Find(&users).Error
+	}
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
 func SaveUser(c *gin.Context, user *models.User) error {
 	DB, err := utils.InitDB()
 	defer DB.Close()
@@ -58,7 +79,7 @@ func SaveUser(c *gin.Context, user *models.User) error {
 	return nil
 }
 
-func DeleteUser(c *gin.Context, user *models.User) error{
+func DeleteUser(c *gin.Context, user *models.User) error {
 	DB, err := utils.InitDB()
 	defer DB.Close()
 	if err != nil {
@@ -84,12 +105,11 @@ func GetUserList(c *gin.Context, page, pageSize, roleId int, searchKey string) (
 	if searchKey != "" {
 		sql = fmt.Sprintf("%s and (username LIKE '%%%s%%') or (nickname LIKE '%%%s%%')", sql, searchKey, searchKey)
 	}
-	if err := DB.Debug().Where(sql).Offset((page-1)*pageSize).Limit(pageSize).Order("created_at DESC").Find(&user).Error; err != nil {
+	if err := DB.Debug().Where(sql).Offset((page - 1) * pageSize).Limit(pageSize).Order("created_at DESC").Find(&user).Error; err != nil {
 		return nil, err
 	}
 	return user, nil
 }
-
 
 func GetUserListCount(c *gin.Context, roleId int, searchKey string) (int, error) {
 	count := 0

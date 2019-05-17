@@ -24,6 +24,14 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	// 每次访问就增加一次访问量
+	access := &models.Access{
+		Username:username,
+		Ip:c.Request.RemoteAddr,
+		AccessTime:time.Now(),
+	}
+	_ = stores.SaveAccess(c, access)
+
 	accessToken, err := handlers.TokenHelper(c, user)
 	if err != nil {
 		utils.MakeErrResponse(c, "获取token失败")
@@ -38,16 +46,10 @@ func Login(c *gin.Context) {
 	utils.MakeOkResponse(c, accessTokenObj)
 }
 
-func QueryUserById(c *gin.Context) {
-	id := c.Query("id")
+func QueryUserByName(c *gin.Context) {
+	name := c.Query("username")
 
-	userId, err := strconv.Atoi(id)
-	if err != nil {
-		utils.MakeErrResponse(c, "用户ID转换失败")
-		return
-	}
-
-	user, err := stores.GetUserByID(c, userId)
+	user, err := stores.GetUserByName(c, name)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
@@ -76,7 +78,7 @@ func QueryAllUser(c *gin.Context) {
 		return
 	}
 
-	utils.MakeOkResponse(c, common.PageResult{TotalNum:total, List:users})
+	utils.MakeOkResponse(c, common.PageResult{TotalNum: total, List: users})
 }
 
 func QueryUserType(c *gin.Context) {
@@ -95,10 +97,16 @@ func QueryUserAuth(c *gin.Context) {
 		utils.MakeErrResponse(c, "用户不存在")
 	}
 	roleId := user.RoleID
+	role, err := stores.GetRoleById(c, roleId)
+	if err != nil {
+		utils.MakeErrResponse(c, "获取角色失败")
+		return
+	}
 	//log.Info("user role:", roleId)
 	roleAuthList, err := stores.GetRoleAuthByRoleID(c, roleId)
 	if err != nil {
 		utils.MakeErrResponse(c, "获取角色权限失败")
+		return
 	}
 	authIds := []int{}
 	for _, roleAuth := range roleAuthList {
@@ -107,8 +115,12 @@ func QueryUserAuth(c *gin.Context) {
 	authList, err := stores.GetAuthByIds(c, authIds)
 	if err != nil {
 		utils.MakeErrResponse(c, "获取权限失败")
+		return
 	}
-	utils.MakeOkResponse(c, authList)
+	utils.MakeOkResponse(c, struct {
+		Role     *models.Role   `json:"role"`
+		AuthList []*models.Auth `json:"auth_list"`
+	}{Role: role, AuthList: authList})
 }
 
 func ValidUserName(c *gin.Context) {

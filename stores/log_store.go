@@ -87,3 +87,18 @@ func SaveSystemLog(c *gin.Context, systemLog *models.Log) error {
 	}
 	return nil
 }
+
+
+func GetSystemLogCount(c *gin.Context) (int, error) {
+	count := 0
+	DB, err := utils.InitDB()
+	defer DB.Close()
+	if err != nil {
+		return 0, err
+	}
+	sql := fmt.Sprintf("status = %d", 0)
+	if err := DB.Debug().Model(&models.Log{}).Where(sql).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
