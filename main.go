@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/Mindyu/blog_system/middleware"
 	"github.com/Mindyu/blog_system/middleware/jwt"
+	"github.com/Mindyu/blog_system/routers"
 	"github.com/Mindyu/blog_system/utils"
 	"github.com/Mindyu/blog_system/utils/systemlog"
 	"github.com/Mindyu/blog_system/views"
@@ -16,6 +17,7 @@ func main() {
 	router.StaticFS("/file", http.Dir("public/upload"))
 	//使用中间件
 	router.Use(middleware.Cors()) // 跨域请求解决
+	routers.NewFrontRouter(router)// 博客前台请求
 	router.Use(jwt.JWTAuth())     // Jwt认证，除登陆外所有请求都需要携带tokenren认证
 
 	userRouter := router.Group("/user")

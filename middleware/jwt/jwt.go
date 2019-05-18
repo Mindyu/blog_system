@@ -18,13 +18,14 @@ func init() {
 	permitSet.Add("/user/login")
 	permitSet.Add("/user/add")
 	permitSet.Add("/file/upload")
-	permitSet.Add("/blog/typecount")
-	permitSet.Add("/blog/monthcount")
-	permitSet.Add("/blog/tags")
-	permitSet.Add("/blog/list")
-	permitSet.Add("/blog/query")
-	permitSet.Add("/comment/blogId")
-	permitSet.Add("/comment/add")
+	//permitSet.Add("/blog/typecount")
+	//permitSet.Add("/blog/monthcount")
+	//permitSet.Add("/blog/tags")
+	//permitSet.Add("/blog/list")
+	//permitSet.Add("/blog/query")
+	//permitSet.Add("/comment/blogId")
+	//permitSet.Add("/comment/add")
+	//permitSet.Add("/reply/add")
 }
 
 // JWTAuth 中间件，检查token

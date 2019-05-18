@@ -20,13 +20,14 @@ func GetCommentList(c *gin.Context) {
 		return
 	}
 	log.Info(param)
+	param.Author = utils.InjectUserName(c)
 
-	comments, err := stores.GetCommentList(c, param.CurrentPage, param.PageSize, param.BlogId, param.SearchWords)
+	comments, err := stores.GetCommentList(c, param.CurrentPage, param.PageSize, param.BlogId, param.Author, param.SearchWords)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
-	total, err := stores.GetCommentListCount(c, param.BlogId, param.SearchWords)
+	total, err := stores.GetCommentListCount(c, param.BlogId, param.Author, param.SearchWords)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
@@ -45,12 +46,12 @@ func GetCommentListByBolgId(c *gin.Context) {
 	}
 	log.Info(param)
 
-	comments, err := stores.GetCommentList(c, param.CurrentPage, param.PageSize, param.BlogId, param.SearchWords)
+	comments, err := stores.GetCommentList(c, param.CurrentPage, param.PageSize, param.BlogId, "", param.SearchWords)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
-	total, err := stores.GetCommentListCount(c, param.BlogId, param.SearchWords)
+	total, err := stores.GetCommentListCount(c, param.BlogId, "", param.SearchWords)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return

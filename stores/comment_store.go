@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetCommentList(c *gin.Context, page, pageSize, blogId int, searchKey string) ([]*models.Comment, error) {
+func GetCommentList(c *gin.Context, page, pageSize, blogId int, author, searchKey string) ([]*models.Comment, error) {
 	comments := []*models.Comment{}
 	DB, err := utils.InitDB()
 	defer DB.Close()
@@ -21,6 +21,9 @@ func GetCommentList(c *gin.Context, page, pageSize, blogId int, searchKey string
 	if searchKey != "" {
 		sql = fmt.Sprintf("%s and (blog_title LIKE '%%%s%%') or (comment_username LIKE '%%%s%%')", sql, searchKey, searchKey)
 	}
+	if author != "" {
+		sql = fmt.Sprintf("%s and blog_author = '%s'", sql, author)
+	}
 	if err := DB.Debug().Where(sql).Offset((page-1)*pageSize).Limit(pageSize).Order("created_at DESC").Find(&comments).Error; err != nil {
 		return nil, err
 	}
@@ -28,7 +31,7 @@ func GetCommentList(c *gin.Context, page, pageSize, blogId int, searchKey string
 }
 
 
-func GetCommentListCount(c *gin.Context, blogId int, searchKey string) (int, error) {
+func GetCommentListCount(c *gin.Context, blogId int, author, searchKey string) (int, error) {
 	count := 0
 	DB, err := utils.InitDB()
 	defer DB.Close()
@@ -41,6 +44,9 @@ func GetCommentListCount(c *gin.Context, blogId int, searchKey string) (int, err
 	}
 	if searchKey != "" {
 		sql = fmt.Sprintf("%s and (blog_title LIKE '%%%s%%') or (comment_username LIKE '%%%s%%')", sql, searchKey, searchKey)
+	}
+	if author != "" {
+		sql = fmt.Sprintf("%s and blog_author = '%s'", sql, author)
 	}
 	if err := DB.Debug().Model(&models.Comment{}).Where(sql).Count(&count).Error; err != nil {
 		return 0, err

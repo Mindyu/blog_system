@@ -20,13 +20,29 @@ func GetReplyList(c *gin.Context) {
 		return
 	}
 	log.Info(param)
+	name := utils.InjectUserName(c)
 
-	comments, err := stores.GetCommentReplyList(c, param.CurrentPage, param.PageSize, param.CommentId, param.SearchWords)
+	if name == "" {
+		comments, err := stores.GetCommentReplyList(c, param.CurrentPage, param.PageSize, param.CommentId, param.SearchWords)
+		if err != nil {
+			utils.MakeErrResponse(c, err.Error())
+			return
+		}
+		total, err := stores.GetCommentReplyListCount(c, param.CommentId, param.SearchWords)
+		if err != nil {
+			utils.MakeErrResponse(c, err.Error())
+			return
+		}
+
+		utils.MakeOkResponse(c, common.PageResult{TotalNum: total, List: comments})
+		return
+	}
+	comments, err := stores.GetCommentReplyListWithAuthor(c, param.CurrentPage, param.PageSize, param.CommentId, name ,param.SearchWords)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
-	total, err := stores.GetCommentReplyListCount(c, param.CommentId, param.SearchWords)
+	total, err := stores.GetCommentReplyListCountWithAuthor(c, param.CommentId, name, param.SearchWords)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
@@ -53,7 +69,6 @@ func ReplyComment(c *gin.Context) {
 	}
 	utils.MakeOkResponse(c, "回复成功")
 }
-
 
 func DeleteCommentReplyById(c *gin.Context) {
 	id := c.Query("replyId")

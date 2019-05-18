@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey string, sortType int) ([]*models.Blog, error) {
+func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey, author string, sortType int) ([]*models.Blog, error) {
 	blogs := []*models.Blog{}
 	DB, err := utils.InitDB()
 	defer DB.Close()
@@ -28,6 +28,9 @@ func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey strin
 				"(author LIKE '%%%s%%'))", sql, searchKey, searchKey, searchKey)
 		}
 	}
+	if author!="" {
+		sql = fmt.Sprintf("%s and author = '%s'", sql, author)
+	}
 	sortList := []string{"updated_at", "read_count", "reply_count"}
 	if err := DB.Debug().Where(sql).Offset((page - 1) * pageSize).Limit(pageSize).Order(sortList[sortType] + " DESC").
 		Find(&blogs).Error; err != nil {
@@ -36,7 +39,7 @@ func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey strin
 	return blogs, nil
 }
 
-func GetBlogListCount(c *gin.Context, blogTypeId int, searchKey string) (int, error) {
+func GetBlogListCount(c *gin.Context, blogTypeId int, searchKey, author string) (int, error) {
 	count := 0
 	DB, err := utils.InitDB()
 	defer DB.Close()
@@ -49,6 +52,9 @@ func GetBlogListCount(c *gin.Context, blogTypeId int, searchKey string) (int, er
 	}
 	if searchKey != "" {
 		sql = fmt.Sprintf("%s and (blog_title LIKE '%%%s%%') or (blog_content LIKE '%%%s%%')", sql, searchKey, searchKey)
+	}
+	if author!="" {
+		sql = fmt.Sprintf("%s and author = '%s'", sql, author)
 	}
 	if err := DB.Debug().Model(&models.Blog{}).Where(sql).Count(&count).Error; err != nil {
 		return 0, err

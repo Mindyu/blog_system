@@ -19,13 +19,14 @@ func GetBlogList(c *gin.Context) {
 		return
 	}
 	log.Info(param)
+	param.Author = utils.InjectUserName(c)
 
-	blogs, err := stores.GetBlogList(c, param.CurrentPage, param.PageSize, param.BlogTypeId, param.SearchWords, param.SortType)
+	blogs, err := stores.GetBlogList(c, param.CurrentPage, param.PageSize, param.BlogTypeId, param.SearchWords, param.Author, param.SortType)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
-	total, err := stores.GetBlogListCount(c, param.BlogTypeId, param.SearchWords)
+	total, err := stores.GetBlogListCount(c, param.BlogTypeId, param.SearchWords, param.Author)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return

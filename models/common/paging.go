@@ -18,13 +18,15 @@ type UserPageRequest struct {
 
 type BlogPageRequest struct {
 	PageRequest
-	BlogTypeId int `json:"blog_type_id"`
-	SortType   int `json:"sort_type"`
+	BlogTypeId int    `json:"blog_type_id"`
+	SortType   int    `json:"sort_type"`
+	Author     string `json:"author"`
 }
 
 type CommentPageRequest struct {
 	PageRequest
 	BlogId int `json:"blog_id"`
+	Author     string `json:"author"`
 }
 
 type ReplyPageRequest struct {

@@ -18,6 +18,7 @@ type Comment struct {
 	ID              int             `gorm:"column:id;primary_key" json:"id"`
 	BlogID          int             `gorm:"column:blog_id" json:"blog_id"`
 	BlogTitle       string          `gorm:"column:blog_title" json:"blog_title"`
+	BlogAuthor      string          `gorm:"column:blog_author" json:"blog_author"`
 	CommentContent  string          `gorm:"column:comment_content" json:"comment_content"`
 	CommentUsername string          `gorm:"column:comment_username" json:"comment_username"`
 	Status          int             `gorm:"column:status" json:"status"`
@@ -30,7 +31,6 @@ type Comment struct {
 func (c *Comment) TableName() string {
 	return "comment"
 }
-
 
 // 实现它的json序列化方法
 func (this Comment) MarshalJSON() ([]byte, error) {
