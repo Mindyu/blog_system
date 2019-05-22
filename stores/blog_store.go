@@ -171,3 +171,15 @@ WHERE
 	}
 	return tags, nil
 }
+
+func SaveBlogType(c *gin.Context, blogType *models.BlogType) error {
+	DB, err := utils.InitDB()
+	defer DB.Close()
+	if err != nil {
+		return err
+	}
+	if err := DB.Save(blogType).Error; err != nil {
+		return err
+	}
+	return nil
+}

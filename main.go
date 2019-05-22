@@ -38,6 +38,7 @@ func main() {
 		blogRouter.POST("/list", views.GetBlogList)
 		blogRouter.GET("/query", views.QueryBlogById)
 		blogRouter.GET("/type", views.QueryAllBlogType)
+		blogRouter.POST("/type/add", systemlog.OperationLog(views.AddBlogType,"新增博客类别"))
 		blogRouter.GET("/typecount", views.QueryBlogTypeStats)
 		blogRouter.GET("/monthcount", views.QueryBlogByMonth)
 		blogRouter.GET("/tags", views.QueryBlogTags)
@@ -78,6 +79,7 @@ func main() {
 		systemLogRouter.POST("/list", views.GetSystemLogList)
 		systemLogRouter.GET("/count", views.GetSystemLogCount)
 		systemLogRouter.GET("/access", views.QuerySystemAccessCount)
+		systemLogRouter.GET("/access/week", views.GetSystemAccessWeek)
 		systemLogRouter.DELETE("/delete", systemlog.OperationLog(views.DeleteSystemLogById, "删除日志记录"))
 	}
 	privateMsgRouter := router.Group("/msg")

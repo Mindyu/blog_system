@@ -13,9 +13,12 @@ import (
 
 func OperationLog(h gin.HandlerFunc, operation string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		claims := ctx.MustGet("claims")
-		customclaims := claims.(*jwt.CustomClaims)
-		userName := customclaims.UserName
+		userName := ""
+		if ctx.Request.URL.Path != "/user/add" {
+			claims := ctx.MustGet("claims")
+			customclaims := claims.(*jwt.CustomClaims)
+			userName = customclaims.UserName
+		}
 		data, _ := ctx.GetRawData()
 
 		systemLog := &models.Log{}
