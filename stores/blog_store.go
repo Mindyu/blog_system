@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey, author string, sortType int) ([]*models.Blog, error) {
+func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey, author string, sortType,private int) ([]*models.Blog, error) {
 	blogs := []*models.Blog{}
 	DB, err := utils.InitDB()
 	defer DB.Close()
@@ -31,6 +31,9 @@ func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey, auth
 	if author!="" {
 		sql = fmt.Sprintf("%s and author = '%s'", sql, author)
 	}
+	if private==1 {
+		sql = fmt.Sprintf("%s and personal = %d", sql, private)
+	}
 	sortList := []string{"updated_at", "read_count", "reply_count"}
 	if err := DB.Debug().Where(sql).Offset((page - 1) * pageSize).Limit(pageSize).Order(sortList[sortType] + " DESC").
 		Find(&blogs).Error; err != nil {
@@ -39,7 +42,7 @@ func GetBlogList(c *gin.Context, page, pageSize, blogTypeId int, searchKey, auth
 	return blogs, nil
 }
 
-func GetBlogListCount(c *gin.Context, blogTypeId int, searchKey, author string) (int, error) {
+func GetBlogListCount(c *gin.Context, blogTypeId int, searchKey, author string, private int) (int, error) {
 	count := 0
 	DB, err := utils.InitDB()
 	defer DB.Close()
@@ -55,6 +58,9 @@ func GetBlogListCount(c *gin.Context, blogTypeId int, searchKey, author string) 
 	}
 	if author!="" {
 		sql = fmt.Sprintf("%s and author = '%s'", sql, author)
+	}
+	if private==1 {
+		sql = fmt.Sprintf("%s and personal = %d", sql, private)
 	}
 	if err := DB.Debug().Model(&models.Blog{}).Where(sql).Count(&count).Error; err != nil {
 		return 0, err
@@ -113,7 +119,7 @@ from
 LEFT JOIN
 	blog_type type on type_id = type.id
 WHERE
-	blog.status = 0
+	blog.status = 0 and blog.personal = 1
 GROUP BY
 	type_id
 ORDER BY
@@ -141,6 +147,8 @@ func GetBlogStatsByMonth(c *gin.Context) ([]*Stats, error) {
 	DATE_FORMAT(created_at, '%Y-%m') as month, count(*) as count
 from 
 	blog
+WHERE
+	status = 0 and personal = 1
 GROUP BY
 	month
 ORDER BY

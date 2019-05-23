@@ -21,19 +21,35 @@ func GetBlogList(c *gin.Context) {
 	log.Info(param)
 	param.Author = utils.InjectUserName(c)
 
-	blogs, err := stores.GetBlogList(c, param.CurrentPage, param.PageSize, param.BlogTypeId, param.SearchWords, param.Author, param.SortType)
+	_, exist := c.Get("claims")
+	if exist {
+		blogs, err := stores.GetBlogList(c, param.CurrentPage, param.PageSize, param.BlogTypeId, param.SearchWords, param.Author, param.SortType, 0)
+		if err != nil {
+			utils.MakeErrResponse(c, err.Error())
+			return
+		}
+		total, err := stores.GetBlogListCount(c, param.BlogTypeId, param.SearchWords, param.Author,0)
+		if err != nil {
+			utils.MakeErrResponse(c, err.Error())
+			return
+		}
+
+		utils.MakeOkResponse(c, common.PageResult{TotalNum: total, List: blogs})
+		return
+	}
+	// 游客访问，只能访问公有博客
+	blogs, err := stores.GetBlogList(c, param.CurrentPage, param.PageSize, param.BlogTypeId, param.SearchWords, param.Author, param.SortType, 1)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
-	total, err := stores.GetBlogListCount(c, param.BlogTypeId, param.SearchWords, param.Author)
+	total, err := stores.GetBlogListCount(c, param.BlogTypeId, param.SearchWords, param.Author,1)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
 
 	utils.MakeOkResponse(c, common.PageResult{TotalNum: total, List: blogs})
-
 }
 
 func QueryBlogById(c *gin.Context) {
