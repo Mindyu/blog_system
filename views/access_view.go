@@ -25,10 +25,7 @@ func GetSystemAccessWeek(c *gin.Context) {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
-	/*if len(stats) == 7 {
-		utils.MakeOkResponse(c, stats)
-		return
-	}*/
+
 	statMap := map[string]int{}
 	for _, stat := range stats {
 		statMap[stat.Date] = stat.Count
