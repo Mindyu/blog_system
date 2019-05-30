@@ -22,9 +22,11 @@ func OperationLog(h gin.HandlerFunc, operation string) gin.HandlerFunc {
 		data, _ := ctx.GetRawData()
 
 		systemLog := &models.Log{}
-		systemLog.Params = string(data)
-		if systemLog.Params == "" {
-			systemLog.Params = ctx.Request.URL.RawQuery
+		if ctx.Request.URL.Path != "/file/upload" {
+			systemLog.Params = string(data)
+			if systemLog.Params == "" {
+				systemLog.Params = ctx.Request.URL.RawQuery
+			}
 		}
 		systemLog.Username = userName
 		systemLog.CreatedAt = time.Now()
@@ -32,7 +34,7 @@ func OperationLog(h gin.HandlerFunc, operation string) gin.HandlerFunc {
 		systemLog.Operation = operation
 		systemLog.Status = 0
 		log.Info(systemLog)
-		stores.SaveSystemLog(ctx, systemLog)
+		_ = stores.SaveSystemLog(ctx, systemLog)
 
 		// 将body值写回
 		ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer(data))

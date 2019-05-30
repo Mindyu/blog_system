@@ -1,0 +1,19 @@
+# blogSystem Config
+server_name = "blog_system"     # 服务器名称
+img_path = "./public/upload/"   # 图片上传路径
+server_port = 8081              # 服务器端口号
+secret_key = "MDk8ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzmjYyN2I0ZjY=" # 接口签名秘钥,前后端一致
+
+# This block as DBConfig struct
+[database]
+db_type = "mysql"              # 数据库类型
+db_name = "blog_system"        # 数据库名
+db_addr = "127.0.0.1"          # 数据库URL
+db_port = "3306"               # 数据库端口
+db_user = "root"               # 账号
+db_password = "123456"         # 密码
+db_debug = true                # 调试模式
+
+[redis]
+r_host ="127.0.0.1"
+r_port = "6379"

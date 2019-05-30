@@ -2,6 +2,7 @@ package jwt
 
 import (
 	"errors"
+	"github.com/Mindyu/blog_system/config"
 	"github.com/Mindyu/blog_system/utils/set"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -12,20 +13,14 @@ import (
 )
 
 var permitSet *set.Set
+var SignKey string
 
 func init() {
 	permitSet = set.New()
 	permitSet.Add("/user/login")
 	permitSet.Add("/user/add")
-	permitSet.Add("/file/upload")
-	//permitSet.Add("/blog/typecount")
-	//permitSet.Add("/blog/monthcount")
-	//permitSet.Add("/blog/tags")
-	//permitSet.Add("/blog/list")
-	//permitSet.Add("/blog/query")
-	//permitSet.Add("/comment/blogId")
-	//permitSet.Add("/comment/add")
-	//permitSet.Add("/reply/add")
+	// permitSet.Add("/file/upload")    // 对文件上传操作应该加日志
+	SignKey = config.Config().SecretKey
 }
 
 // JWTAuth 中间件，检查token
@@ -37,6 +32,9 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 		token := c.Request.Header.Get("Authorization")
+		if c.Request.URL.Path == "/file/upload" {       // 对于文件上传时，则通过拼接token的方式
+			token = c.Query("token")
+		}
 		if token == "" {
 			c.JSON(http.StatusUnauthorized, "请求未携带token，无权限访问")
 			c.Abort()
@@ -79,7 +77,6 @@ var (
 	TokenNotValidYet error  = errors.New("Token not active yet")
 	TokenMalformed   error  = errors.New("That's not even a token")
 	TokenInvalid     error  = errors.New("Couldn't handle this token:")
-	SignKey          string = "MDk8ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzmjYyN2I0ZjY="
 )
 
 // 载荷，可以加一些自己需要的信息

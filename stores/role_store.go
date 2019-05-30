@@ -2,18 +2,14 @@ package stores
 
 import (
 	"github.com/Mindyu/blog_system/models"
-	"github.com/Mindyu/blog_system/utils"
+	"github.com/Mindyu/blog_system/persistence"
 	"github.com/gin-gonic/gin"
 )
 
 func GetRoleById(c *gin.Context, roleId int) (*models.Role, error) {
 	role := &models.Role{}
-	DB, err := utils.InitDB()
-	defer DB.Close()
-	if err != nil {
-		return nil, err
-	}
-	if err := DB.Debug().Where("id = ?", roleId).Find(role).Error; err!=nil{
+
+	if err := persistence.GetOrm().Debug().Where("id = ?", roleId).Find(role).Error; err!=nil{
 		return nil, err
 	}
 	return role, nil
@@ -22,12 +18,8 @@ func GetRoleById(c *gin.Context, roleId int) (*models.Role, error) {
 
 func GetAllRoles(c *gin.Context) ([]*models.Role, error) {
 	roles := []*models.Role{}
-	DB, err := utils.InitDB()
-	defer DB.Close()
-	if err != nil {
-		return nil, err
-	}
-	if err := DB.Find(&roles).Error; err!=nil{
+
+	if err := persistence.GetOrm().Find(&roles).Error; err!=nil{
 		return nil, err
 	}
 	return roles, nil
@@ -35,12 +27,8 @@ func GetAllRoles(c *gin.Context) ([]*models.Role, error) {
 
 
 func SaveRole(c *gin.Context, role *models.Role) error {
-	DB, err := utils.InitDB()
-	defer DB.Close()
-	if err != nil {
-		return err
-	}
-	if err := DB.Save(role).Error; err != nil {
+
+	if err := persistence.GetOrm().Save(role).Error; err != nil {
 		return err
 	}
 	return nil

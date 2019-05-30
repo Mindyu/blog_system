@@ -1,6 +1,7 @@
 package views
 
 import (
+	"github.com/Mindyu/blog_system/config"
 	"github.com/Mindyu/blog_system/utils"
 	"github.com/Mindyu/blog_system/utils/fileutil"
 	"github.com/gin-gonic/gin"
@@ -9,7 +10,6 @@ import (
 	"strings"
 	"time"
 )
-
 
 func Upload(ctx *gin.Context) {
 	t := time.Now()
@@ -23,14 +23,14 @@ func Upload(ctx *gin.Context) {
 	file, err := info.Open()
 	ext := fileutil.ExtensionName(info.Filename)
 	path := dir + "/"
-	err = os.MkdirAll("./public/upload/"+path, os.ModePerm)
+	err = os.MkdirAll(config.Config().ImgPath+path, os.ModePerm)
 	if err != nil {
 		utils.MakeErrResponse(ctx, err.Error())
 		return
 	}
 
 	path += fileutil.UniqueID() + strings.ToLower(ext)
-	out, err := os.OpenFile("./public/upload/"+path, os.O_WRONLY|os.O_CREATE, 0666)
+	out, err := os.OpenFile(config.Config().ImgPath+path, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		utils.MakeErrResponse(ctx, err.Error())
 		return
@@ -44,7 +44,7 @@ func Upload(ctx *gin.Context) {
 func Download(ctx *gin.Context) *os.File {
 	filePath := ctx.Param("file")
 
-	out, err := os.OpenFile("./public/upload/"+filePath, os.O_WRONLY|os.O_CREATE, 0666)
+	out, err := os.OpenFile(config.Config().ImgPath+filePath, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		utils.MakeErrResponse(ctx, err.Error())
 		return nil
