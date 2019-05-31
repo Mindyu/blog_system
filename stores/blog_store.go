@@ -148,10 +148,18 @@ WHERE
 	return tags, nil
 }
 
-func SaveBlogType(c *gin.Context, blogType *models.BlogType) error {
+func GetBlogSearchKey() ([]*common.SearchKey, error) {
+	tags := []*common.SearchKey{}
 
-	if err := persistence.GetOrm().Save(blogType).Error; err != nil {
-		return err
+	sql := `SELECT
+blog_title, keywords, author, blog_type.type_name
+FROM
+blog
+LEFT JOIN blog_type on blog.type_id = blog_type.id
+WHERE
+	status = 0 and personal = 1`
+	if err := persistence.GetOrm().Debug().Raw(sql).Scan(&tags).Error; err != nil {
+		return nil, err
 	}
-	return nil
+	return tags, nil
 }

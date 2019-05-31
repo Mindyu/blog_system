@@ -69,6 +69,7 @@ func NewAdminRouter(router *gin.Engine){
 		systemLogRouter.GET("/access", views.QuerySystemAccessCount)
 		systemLogRouter.GET("/access/week", views.GetSystemAccessWeek)
 		systemLogRouter.DELETE("/delete", systemlog.OperationLog(views.DeleteSystemLogById, "删除日志记录"))
+		systemLogRouter.GET("/export", systemlog.OperationLog(views.ExportOperationLog, "导出操作日志"))
 	}
 	privateMsgRouter := router.Group("/msg")
 	{

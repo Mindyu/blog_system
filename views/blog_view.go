@@ -3,6 +3,7 @@ package views
 import (
 	"github.com/Mindyu/blog_system/models"
 	"github.com/Mindyu/blog_system/models/common"
+	"github.com/Mindyu/blog_system/persistence/trie"
 	"github.com/Mindyu/blog_system/stores"
 	"github.com/Mindyu/blog_system/utils"
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,7 @@ func GetBlogList(c *gin.Context) {
 		return
 	}
 	log.Info(param)
+	// 将JWT中的用户信息取出，如果为非管理员，则只能浏览和自己相关的博客
 	param.Author = utils.InjectUserName(c)
 
 	_, exist := c.Get("claims")
@@ -28,7 +30,7 @@ func GetBlogList(c *gin.Context) {
 			utils.MakeErrResponse(c, err.Error())
 			return
 		}
-		total, err := stores.GetBlogListCount(c, param.BlogTypeId, param.SearchWords, param.Author,0)
+		total, err := stores.GetBlogListCount(c, param.BlogTypeId, param.SearchWords, param.Author, 0)
 		if err != nil {
 			utils.MakeErrResponse(c, err.Error())
 			return
@@ -43,7 +45,7 @@ func GetBlogList(c *gin.Context) {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
-	total, err := stores.GetBlogListCount(c, param.BlogTypeId, param.SearchWords, param.Author,1)
+	total, err := stores.GetBlogListCount(c, param.BlogTypeId, param.SearchWords, param.Author, 1)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
@@ -164,8 +166,14 @@ func QueryBlogTags(c *gin.Context) {
 	}
 
 	tagList := []*common.Tag{}
-	for key, val := range tagMap{
-		tagList = append(tagList, &common.Tag{TagName:key, Count:val})
+	for key, val := range tagMap {
+		tagList = append(tagList, &common.Tag{TagName: key, Count: val})
 	}
 	utils.MakeOkResponse(c, tagList)
+}
+
+func GetBlogSearchKeySug(c *gin.Context) {
+	searchKey := c.Query("key")
+	res := trie.GetKeyTrie().GetStartsWith(searchKey)
+	utils.MakeOkResponse(c, res)
 }

@@ -14,3 +14,11 @@ func GetAllBlogType(c *gin.Context) ([]*models.BlogType, error) {
 	}
 	return types, nil
 }
+
+func SaveBlogType(c *gin.Context, blogType *models.BlogType) error {
+
+	if err := persistence.GetOrm().Save(blogType).Error; err != nil {
+		return err
+	}
+	return nil
+}

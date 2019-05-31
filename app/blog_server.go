@@ -2,11 +2,13 @@ package app
 
 import (
 	"fmt"
+	"github.com/Mindyu/blog_system/config"
 	"github.com/Mindyu/blog_system/middleware"
 	"github.com/Mindyu/blog_system/middleware/jwt"
 	"github.com/Mindyu/blog_system/persistence"
-	"github.com/Mindyu/blog_system/config"
 	"github.com/Mindyu/blog_system/routers"
+	"github.com/Mindyu/blog_system/utils/trie"
+	trie2 "github.com/Mindyu/blog_system/persistence/trie"
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
 	"github.com/jinzhu/gorm"
@@ -16,10 +18,11 @@ import (
 
 //博客应用服务器
 type App struct {
-	DB     *gorm.DB
-	RPool  *redis.Pool
-	Conf   *config.BlogConfig
-	Server *gin.Engine
+	DB      *gorm.DB
+	RPool   *redis.Pool
+	KeyTrie *trie.Trie
+	Conf    *config.BlogConfig
+	Server  *gin.Engine
 }
 
 func NewApp() *App {
@@ -33,6 +36,7 @@ func (app *App) Launch() error {
 	// app.initRedis()
 	app.initServer()
 	app.initImgServer()
+	app.initKeyTrie()
 	app.initRouter()
 	return app.Server.Run(fmt.Sprintf(":%d", app.Conf.ServerPort))
 }
@@ -62,13 +66,18 @@ func (app *App) initServer() {
 	app.Server = gin.Default()
 }
 
+//根据博客名称、分类、标签、作者生成前缀树
+func (app *App) initKeyTrie()  {
+	app.KeyTrie = trie2.GetKeyTrie()
+}
+
 //初始化路由配置
 func (app *App) initRouter() {
 	//使用中间件
-	app.Server.Use(middleware.Cors()) // 跨域请求解决
-	routers.NewFrontRouter(app.Server)// 博客前台请求
-	app.Server.Use(jwt.JWTAuth())     // Jwt认证，除登陆外所有请求都需要携带tokenren认证
-	routers.NewAdminRouter(app.Server)// 博客后端请求
+	app.Server.Use(middleware.Cors())  // 跨域请求解决
+	routers.NewFrontRouter(app.Server) // 博客前台请求
+	app.Server.Use(jwt.JWTAuth())      // Jwt认证，除登陆外所有请求都需要携带tokenren认证
+	routers.NewAdminRouter(app.Server) // 博客后端请求
 }
 
 //配置图片文件服务器

@@ -14,6 +14,7 @@ func NewFrontRouter(engine *gin.Engine){
 		frontRouter.GET("/blog/typecount", views.QueryBlogTypeStats)
 		frontRouter.GET("/blog/monthcount", views.QueryBlogByMonth)
 		frontRouter.GET("/blog/tags", views.QueryBlogTags)
+		frontRouter.GET("/blog/sug", views.GetBlogSearchKeySug)
 
 		frontRouter.POST("/comment/blogId", views.GetCommentListByBolgId)   // 根据博客ID查询所有满足条件的评论
 		frontRouter.POST("/comment/add", views.InsertComment)
