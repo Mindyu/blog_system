@@ -1,6 +1,7 @@
 package views
 
 import (
+	"github.com/Mindyu/blog_system/cache"
 	"github.com/Mindyu/blog_system/models"
 	"github.com/Mindyu/blog_system/stores"
 	"github.com/Mindyu/blog_system/utils"
@@ -8,12 +9,12 @@ import (
 )
 
 func QueryAllBlogType(c *gin.Context) {
-	types, err := stores.GetAllBlogType(c)
+	/*types, err := stores.GetAllBlogType(c)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
-	}
-	utils.MakeOkResponse(c, types)
+	}*/
+	utils.MakeOkResponse(c, cache.Cache())
 }
 
 func QueryBlogTypeStats(c *gin.Context) {
@@ -39,6 +40,8 @@ func AddBlogType(c *gin.Context) {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
+	// 新增类别之后，插入缓存
+	cache.UpdateCache(blogType)
 
 	utils.MakeOkResponse(c, blogType)
 }

@@ -1,6 +1,8 @@
 package trie
 
 import (
+	"github.com/Mindyu/blog_system/cache"
+	"github.com/Mindyu/blog_system/models"
 	"github.com/Mindyu/blog_system/stores"
 	"github.com/Mindyu/blog_system/utils/trie"
 	"github.com/labstack/gommon/log"
@@ -31,4 +33,14 @@ func init() {
 // 获取keyTrie全局实例
 func GetKeyTrie() *trie.Trie {
 	return keyTrie
+}
+
+// 新增博客时更新trie
+func UpdateTrieByAddBlog(blog *models.Blog) {
+	keyTrie.Insert(strings.Trim(blog.BlogTitle, " "))
+	keyTrie.Insert(strings.Trim(blog.Author, " "))
+	keyTrie.Insert(strings.Trim(cache.Map()[blog.TypeID], " "))
+	for _, keyword := range strings.Split(blog.Keywords, ",") {
+		keyTrie.Insert(keyword)
+	}
 }

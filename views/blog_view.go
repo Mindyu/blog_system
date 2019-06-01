@@ -1,6 +1,8 @@
 package views
 
 import (
+	"fmt"
+	"github.com/Mindyu/blog_system/cache"
 	"github.com/Mindyu/blog_system/models"
 	"github.com/Mindyu/blog_system/models/common"
 	"github.com/Mindyu/blog_system/persistence/trie"
@@ -30,6 +32,9 @@ func GetBlogList(c *gin.Context) {
 			utils.MakeErrResponse(c, err.Error())
 			return
 		}
+		for _, v := range blogs{
+			v.BlogContent = ""
+		}
 		total, err := stores.GetBlogListCount(c, param.BlogTypeId, param.SearchWords, param.Author, 0)
 		if err != nil {
 			utils.MakeErrResponse(c, err.Error())
@@ -45,11 +50,53 @@ func GetBlogList(c *gin.Context) {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
+	for _, v := range blogs{
+		v.BlogContent = ""
+	}
 	total, err := stores.GetBlogListCount(c, param.BlogTypeId, param.SearchWords, param.Author, 1)
 	if err != nil {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
+
+	utils.MakeOkResponse(c, common.PageResult{TotalNum: total, List: blogs})
+}
+
+func GetFrontBlogList(c *gin.Context) {
+	param := &common.BlogPageRequest{}
+	err := c.ShouldBindJSON(param)
+	if err != nil {
+		utils.MakeErrResponse(c, "参数解析失败")
+		return
+	}
+	var blogs []*models.Blog
+	var total int
+
+	fmt.Println("get 请求")
+	blogs, total, err = cache.GetBlogListToRedis(param)
+	fmt.Println(len(blogs), "-", total)
+	if len(blogs) > 0 && total > len(blogs) {
+		log.Info("从Redis中获取数据")
+		utils.MakeOkResponse(c, common.PageResult{TotalNum: total, List: blogs})
+		return
+	}
+
+	// 游客访问，只能访问公有博客
+	blogs, err = stores.GetBlogList(c, param.CurrentPage, param.PageSize, param.BlogTypeId, param.SearchWords, "", param.SortType, 1)
+	if err != nil {
+		utils.MakeErrResponse(c, err.Error())
+		return
+	}
+	for _, v := range blogs{
+		v.BlogContent = ""
+	}
+	total, err = stores.GetBlogListCount(c, param.BlogTypeId, param.SearchWords, "", 1)
+	if err != nil {
+		utils.MakeErrResponse(c, err.Error())
+		return
+	}
+	log.Info("从MySQL中获取数据")
+	cache.SetBlogListToRedis(param, blogs, total)
 
 	utils.MakeOkResponse(c, common.PageResult{TotalNum: total, List: blogs})
 }
@@ -90,6 +137,8 @@ func AddBlog(c *gin.Context) {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
+	// 博客新增完成之后根据新增的内容更新前缀树
+	trie.UpdateTrieByAddBlog(blog)
 
 	utils.MakeOkResponse(c, blog)
 }
@@ -107,6 +156,9 @@ func UpdateBlog(c *gin.Context) {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
+	// 博客更新完成之后根据新增的内容更新前缀树
+	trie.UpdateTrieByAddBlog(updated)
+
 	utils.MakeOkResponse(c, "更新成功")
 }
 

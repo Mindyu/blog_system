@@ -9,7 +9,7 @@ func NewFrontRouter(engine *gin.Engine){
 
 	frontRouter := engine.Group("/front")
 	{
-		frontRouter.POST("/blog/list", views.GetBlogList)
+		frontRouter.POST("/blog/list", views.GetFrontBlogList)
 		frontRouter.GET("/blog/query", views.QueryBlogById)
 		frontRouter.GET("/blog/typecount", views.QueryBlogTypeStats)
 		frontRouter.GET("/blog/monthcount", views.QueryBlogByMonth)

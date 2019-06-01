@@ -33,7 +33,7 @@ func NewApp() *App {
 func (app *App) Launch() error {
 	app.Conf = config.Config()
 	app.initDB()
-	// app.initRedis()
+	app.initRedis()
 	app.initServer()
 	app.initImgServer()
 	app.initKeyTrie()
@@ -44,10 +44,10 @@ func (app *App) Launch() error {
 //关闭操作
 func (app *App) Destory() {
 	if app.DB != nil {
-		app.DB.Close()
+		_ = app.DB.Close()
 	}
 	if app.RPool != nil {
-		app.RPool.Close()
+		_ = app.RPool.Close()
 	}
 }
 

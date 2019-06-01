@@ -12,11 +12,14 @@ var pool *redis.Pool
 func init() {
 	conf := config.Config().RedisCfg
 	pool = &redis.Pool{
-		MaxIdle:     20,
-		MaxActive:   30,
-		IdleTimeout: 60 * time.Second,
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", conf.Host+":"+conf.Port)
+		MaxIdle:     20,        // 最大空闲连接数
+		MaxActive:   30,        // 一个pool所能分配的最大的连接数目
+		IdleTimeout: 60 * time.Second,      // 空闲连接超时时间，超过超时时间的空闲连接会被关闭
+		Dial: func() (redis.Conn, error) {  // Dial()方法返回一个连接，从在需要创建连接到的时候调用
+			c, err := redis.Dial("tcp", conf.Host+":"+conf.Port,
+				redis.DialConnectTimeout(10*time.Second),
+				redis.DialReadTimeout(10*time.Second),
+				redis.DialWriteTimeout(10*time.Second))
 			if err != nil {
 				return nil, err
 			}
