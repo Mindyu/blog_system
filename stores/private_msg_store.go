@@ -9,7 +9,7 @@ import (
 func GetNotReadMsgByUserName(c *gin.Context, name string) ([]*models.PrivateMsg, error) {
 	msgs := []*models.PrivateMsg{}
 
-	if err := persistence.GetOrm().Debug().Where("status = ? and is_read = ? and receiver = ?", 0, 0, name).Find(&msgs).Error; err != nil {
+	if err := persistence.GetOrm().Debug().Where("status = ? and is_read = ? and receiver = ?", 0, 0, name).Order("created_at DESC").Find(&msgs).Error; err != nil {
 		return nil, err
 	}
 	return msgs, nil
@@ -18,7 +18,7 @@ func GetNotReadMsgByUserName(c *gin.Context, name string) ([]*models.PrivateMsg,
 func GetReadMsgByUserName(c *gin.Context, name string) ([]*models.PrivateMsg, error) {
 	msgs := []*models.PrivateMsg{}
 
-	if err := persistence.GetOrm().Debug().Where("status = ? and is_read = ? and receiver = ?", 0, 1, name).Find(&msgs).Error; err != nil {
+	if err := persistence.GetOrm().Debug().Where("status = ? and is_read = ? and receiver = ?", 0, 1, name).Order("created_at DESC").Find(&msgs).Error; err != nil {
 		return nil, err
 	}
 	return msgs, nil

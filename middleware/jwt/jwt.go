@@ -32,7 +32,7 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 		token := c.Request.Header.Get("Authorization")
-		if c.Request.URL.Path == "/file/upload" {       // 对于文件上传时，则通过拼接token的方式
+		if c.Request.URL.Path == "/file/upload" || c.Request.URL.Path == "/ws" { // 对于文件上传时，则通过拼接token的方式
 			token = c.Query("token")
 		}
 		if token == "" {
@@ -73,10 +73,10 @@ type JWT struct {
 
 // 一些常量
 var (
-	TokenExpired     error  = errors.New("Token is expired")
-	TokenNotValidYet error  = errors.New("Token not active yet")
-	TokenMalformed   error  = errors.New("That's not even a token")
-	TokenInvalid     error  = errors.New("Couldn't handle this token:")
+	TokenExpired     error = errors.New("Token is expired")
+	TokenNotValidYet error = errors.New("Token not active yet")
+	TokenMalformed   error = errors.New("That's not even a token")
+	TokenInvalid     error = errors.New("Couldn't handle this token:")
 )
 
 // 载荷，可以加一些自己需要的信息

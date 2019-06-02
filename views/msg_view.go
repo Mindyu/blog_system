@@ -2,6 +2,7 @@ package views
 
 import (
 	"github.com/Mindyu/blog_system/models"
+	"github.com/Mindyu/blog_system/server"
 	"github.com/Mindyu/blog_system/stores"
 	"github.com/Mindyu/blog_system/utils"
 	"github.com/gin-gonic/gin"
@@ -48,6 +49,10 @@ func AddPrivateMsg(c *gin.Context) {
 		utils.MakeErrResponse(c, err.Error())
 		return
 	}
+
+	ws := server.GetWebSocket()
+	ws.SendMsgToChan(msg.Receiver, msg.Sender)
+
 	utils.MakeOkResponse(c, msg)
 }
 

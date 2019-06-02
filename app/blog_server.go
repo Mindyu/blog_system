@@ -6,9 +6,9 @@ import (
 	"github.com/Mindyu/blog_system/middleware"
 	"github.com/Mindyu/blog_system/middleware/jwt"
 	"github.com/Mindyu/blog_system/persistence"
+	trie2 "github.com/Mindyu/blog_system/persistence/trie"
 	"github.com/Mindyu/blog_system/routers"
 	"github.com/Mindyu/blog_system/utils/trie"
-	trie2 "github.com/Mindyu/blog_system/persistence/trie"
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
 	"github.com/jinzhu/gorm"
@@ -18,15 +18,22 @@ import (
 
 //博客应用服务器
 type App struct {
-	DB      *gorm.DB
-	RPool   *redis.Pool
-	KeyTrie *trie.Trie
-	Conf    *config.BlogConfig
-	Server  *gin.Engine
+	DB              *gorm.DB
+	RPool           *redis.Pool
+	KeyTrie         *trie.Trie
+	Conf            *config.BlogConfig
+	Server          *gin.Engine
 }
 
+var app *App
+
 func NewApp() *App {
-	return &App{}
+	app = &App{}
+	return app
+}
+
+func GetApp() *App {
+	return app
 }
 
 //启动服务器
@@ -67,7 +74,7 @@ func (app *App) initServer() {
 }
 
 //根据博客名称、分类、标签、作者生成前缀树
-func (app *App) initKeyTrie()  {
+func (app *App) initKeyTrie() {
 	app.KeyTrie = trie2.GetKeyTrie()
 }
 

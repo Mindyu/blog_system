@@ -8,6 +8,8 @@ import (
 )
 
 func NewAdminRouter(router *gin.Engine){
+	router.GET("/ws", views.WebSocket)
+
 	userRouter := router.Group("/user")
 	{
 		userRouter.POST("/login", views.Login)
